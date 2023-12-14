@@ -14,7 +14,7 @@ import MessageDisplay from "../../chat/window/message-display/MessageDisplay";
 const ChatWindow = () => {
   const { profile } = useSelector((state) => state.user);
   const { isLoading } = useSelector((state) => state.chat);
-  const [receiver, setReceiver] = useState();
+  const [receiver, setReceiver] = useState(null);
   const [conversationId, setConversationId] = useState("");
   const [chatMessages, setChatMessages] = useState([]);
   const [onlineUsers, setOnlineUsers] = useState([]);
@@ -169,13 +169,22 @@ const ChatWindow = () => {
               <div className="chat-title-avatar">
                 <Avatar
                   name={receiver?.username}
-                  bgColor={receiver.avatarColor}
+                  bgColor={
+                    receiver.profilePicture == "undefined"
+                      ? "transparent"
+                      : receiver.avatarColor
+                  }
                   textColor="#ffffff"
                   size={40}
-                  avatarSrc={receiver?.profilePicture}
+                  avatarSrc={
+                    receiver?.profilePicture == "undefined"
+                      ? ""
+                      : receiver?.profilePicture
+                  }
                 />
               </div>
             )}
+
             <div className="chat-title-items">
               <div
                 className={`chat-name ${
