@@ -1,10 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import "../auth.scss";
 import SignIn from "../signin/SignIn";
 import SignUp from "../signup/SignUp";
 import ForgotPassword from "../forgot-password/ForgotPassword";
 import useLocalStorage from "../../../hooks/useLocalStorage";
 import { useNavigate } from "react-router-dom";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+import { useRive } from "@rive-app/react-canvas";
+
+import LIKE from "../../../assets/rive/like-rive.riv";
 
 const AuthTabs = () => {
   const [isRegisterActive, setRegisterActive] = useState(false);
@@ -17,9 +22,41 @@ const AuthTabs = () => {
     if (keepLoggedIn) navigate("/app/home/feeds");
   }, [keepLoggedIn, navigate]);
 
+  const [floatingIconStatus, setFloatingIconStatus] = useState(true);
+  const Like = useRive({
+    src: `${LIKE}`,
+    stateMachines: "controller",
+    autoplay: true,
+    onLoadError: () => {
+      setFloatingIconStatus(false);
+      console.log("Rive ERROR");
+    },
+    onLoad: () => {
+      setFloatingIconStatus(true);
+      console.log("Rive LOADED");
+    },
+  });
+
+  const LikeIcon = Like.RiveComponent;
+
+  useGSAP(() => {
+    const authPage = document.getElementById("auth");
+    authPage.addEventListener("mousemove", (des) => {
+      gsap.to(".float", { x: des.x, y: des.y });
+    });
+  }, []);
+
   return (
-    <div className="auth__page">
-      <div className="credits">Set Your Heart Ablaze - Khalid</div>
+    <div id="auth" className="auth__page">
+      <div className="credits">
+        <h3>Set Your Heart Ablaze - Khalid</h3>
+      </div>
+      {floatingIconStatus && (
+        <div className="float" id="float">
+          <LikeIcon className="floatingRive" />
+        </div>
+      )}
+
       <div
         className={`auth__container ${isRegisterActive ? "auth__active" : ""}`}
         id="auth__container"
